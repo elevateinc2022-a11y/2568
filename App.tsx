@@ -50,7 +50,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
       {/* Hero Section */}
       <header className="relative bg-slate-900 overflow-hidden">
         <div className="absolute inset-0 opacity-40">
-            <img src="https://picsum.photos/seed/oerc_hero/1920/1080?grayscale&blur=2" alt="Background" className="w-full h-full object-cover" />
+            <img src={import.meta.env.BASE_URL + 'images/background.png'} alt="Background" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
@@ -396,7 +396,7 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
     <div className="py-12 bg-slate-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl font-serif font-bold text-slate-900 mb-2">Research Library</h1>
-            <p className="text-slate-600 mb-8">Search our AI-powered database or browse by topic.</p>
+
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Sidebar */}
