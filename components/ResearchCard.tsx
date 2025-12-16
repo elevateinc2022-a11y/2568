@@ -41,7 +41,7 @@ const ResearchCard: React.FC<ResearchCardProps> = ({ paper, onClick }) => {
           </div>
           <div className="flex items-center">
             <Calendar className="h-3 w-3 mr-1" />
-            {new Date(paper.date).toLocaleDateString()}
+            {new Date(paper.date.replace(/-/g, '/')).toLocaleDateString()}
           </div>
         </div>
         <button className="mt-4 w-full py-2 flex items-center justify-center text-brand-600 font-medium hover:bg-brand-50 rounded-lg transition-colors text-sm">

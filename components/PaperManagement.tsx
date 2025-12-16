@@ -154,7 +154,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
                   <tr key={paper.id} className="border-b border-slate-50 hover:bg-slate-50">
                     <td className="py-4 pr-4 font-medium text-slate-900">{paper.title}</td>
                     <td className="py-4 text-slate-600">{paper.author}</td>
-                    <td className="py-4 text-slate-500 text-sm">{new Date(paper.date).toLocaleDateString()}</td>
+                    <td className="py-4 text-slate-500 text-sm">{new Date(paper.date.replace(/-/g, '/')).toLocaleDateString()}</td>
                     <td className="py-4 text-right flex justify-end gap-2">
                       <button 
                         onClick={() => handleEditClick(paper)}
