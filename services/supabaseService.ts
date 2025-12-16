@@ -152,7 +152,13 @@ export const updatePaper = async (
       .eq('id', id)
       .single();
 
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+        console.error('Error fetching paper for update:', fetchError);
+        throw fetchError;
+    }
+    if (!currentPaper) {
+        throw new Error(`Paper with ID ${id} not found during update.`);
+    }
 
 
     // Handle new PDF file upload
@@ -160,7 +166,8 @@ export const updatePaper = async (
       // Delete old PDF if it exists
       const oldPdfPath = extractStoragePath(currentPaper.pdf_url);
       if (oldPdfPath) {
-        await supabase.storage.from('oerc_assests').remove([oldPdfPath]);
+        const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldPdfPath]);
+        if (removeError) console.error("Could not remove old PDF:", removeError.message);
       }
 
       const pdfExt = newPdfFile.name.split('.').pop();
@@ -177,7 +184,8 @@ export const updatePaper = async (
       // Delete old Image if it exists
       const oldImagePath = extractStoragePath(currentPaper.image_url);
       if (oldImagePath) {
-        await supabase.storage.from('oerc_assests').remove([oldImagePath]);
+        const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldImagePath]);
+        if (removeError) console.error("Could not remove old image:", removeError.message);
       }
 
       const imgExt = newImageFile.name.split('.').pop();
