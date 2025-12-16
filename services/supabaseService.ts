@@ -408,7 +408,8 @@ export const uploadPaperToLibrary = async (
   abstract: string,
   pdfFile: File,
   imageFile: File | null,
-  tags: string[]
+  tags: string[],
+  date?: string
 ): Promise<ResearchPaper | null> => {
   try {
     // 1. Upload the PDF file
@@ -453,7 +454,7 @@ export const uploadPaperToLibrary = async (
           title,
           author,
           abstract,
-          date: new Date().toISOString(),
+          date: date ? new Date(date).toISOString() : new Date().toISOString(),
           tags: tags.length > 0 ? tags : ['Research'], 
           image_url: imageUrl,
           pdf_url: pdfUrl,
