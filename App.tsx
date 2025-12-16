@@ -59,7 +59,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
               Advancing Education Through <span className="text-brand-400">Evidence and Innovation</span>
             </h1>
             <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-2xl">
-              The Ontario Educational Research Consortium bridges the gap between academic research and classroom practice, empowering educators with data-driven insights.
+              Dedicated to advancing educational practices in Ontario through rigorous research, collaboration, and data-driven insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button onClick={() => setCurrentPage(Page.RESEARCH)} className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-brand-500/30 transition-all duration-300 flex items-center justify-center">
