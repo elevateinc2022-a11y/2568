@@ -378,11 +378,9 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                        className="w-full flex items-center justify-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-sm mb-3"
                      >
                        <Download className="h-5 w-5 mr-2" />
-                       View Paper (PDF)
+                       Read Full Text Here
                      </a>
-                     <p className="text-xs text-slate-500 text-center">
-                        Available for educational use under CC-BY license.
-                     </p>
+
                   </div>
                </div>
             </div>
