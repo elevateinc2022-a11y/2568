@@ -195,7 +195,7 @@ export const updatePaper = async (
       .update({
         title: paperUpdates.title,
         author: paperUpdates.author,
-        date: paperUpdates.date ? new Date(paperUpdates.date).toISOString() : undefined,
+        date: paperUpdates.date,
         abstract: paperUpdates.abstract,
         tags: paperUpdates.tags,
         image_url: imageUrl,
@@ -454,7 +454,7 @@ export const uploadPaperToLibrary = async (
           title,
           author,
           abstract,
-          date: date ? new Date(date).toISOString() : new Date().toISOString(),
+          date: date || new Date().toISOString().split('T')[0],
           tags: tags.length > 0 ? tags : ['Research'], 
           image_url: imageUrl,
           pdf_url: pdfUrl,
