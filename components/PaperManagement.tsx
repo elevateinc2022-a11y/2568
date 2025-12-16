@@ -32,8 +32,11 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
     // Parse tags from comma separated string
     const tagsArray = newTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
 
+    // Use today's date if no date is selected
+    const finalDate = newDate || new Date().toISOString().split('T')[0];
+
     // Call Supabase Service
-    const uploadedPaper = await uploadPaperToLibrary(newTitle, newAuthor, newAbstract, newFile, newImage, tagsArray, newDate);
+    const uploadedPaper = await uploadPaperToLibrary(newTitle, newAuthor, newAbstract, newFile, newImage, tagsArray, finalDate);
 
     if (uploadedPaper) {
       setPapers(prev => [uploadedPaper, ...prev]);
@@ -82,6 +85,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
 
     setUploading(true);
     const tagsArray = newTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    const finalDate = newDate || new Date().toISOString().split('T')[0];
 
     const updatedPaper = await updatePaper(
       editingPaper.id,
@@ -90,7 +94,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
         author: newAuthor,
         abstract: newAbstract,
         tags: tagsArray,
-        date: newDate,
+        date: finalDate,
         pdfUrl: editingPaper.pdfUrl, // Keep existing if not new file
         imageUrl: editingPaper.imageUrl, // Keep existing if not new file
       },
