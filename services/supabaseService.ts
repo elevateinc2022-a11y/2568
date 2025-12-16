@@ -141,12 +141,11 @@ export const updatePaper = async (
   newPdfFile?: File | null,
   newImageFile?: File | null
 ): Promise<ResearchPaper | null> => {
-  console.log("1. Starting updatePaper for id:", id);
   try {
     let pdfUrl = paperUpdates.pdfUrl;
     let imageUrl = paperUpdates.imageUrl;
 
-    console.log("2. Fetching current paper from DB.");
+    // First, get the current paper to determine existing file paths
     const { data: currentPaper, error: fetchError } = await supabase
       .from('research_papers')
       .select('pdf_url, image_url')
@@ -154,60 +153,55 @@ export const updatePaper = async (
       .single();
 
     if (fetchError) {
-        console.error('Error fetching paper for update:', fetchError);
-        throw fetchError;
+      console.error('Error fetching paper to update:', fetchError);
+      throw fetchError;
     }
     if (!currentPaper) {
-        // This case should be caught by fetchError with .single()
-        console.error("Paper not found, but no fetchError was thrown. This is unexpected.");
-        throw new Error(`Paper with ID ${id} not found during update.`);
+        throw new Error(`Paper with id ${id} not found.`);
     }
-    console.log("3. Successfully fetched current paper:", currentPaper);
 
+    // Handle new PDF file upload
     if (newPdfFile) {
-      console.log("4a. New PDF file provided. Handling upload.");
       const oldPdfPath = extractStoragePath(currentPaper.pdf_url);
       if (oldPdfPath) {
-        console.log("4b. Deleting old PDF:", oldPdfPath);
         const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldPdfPath]);
-        if (removeError) console.error("Could not remove old PDF, continuing anyway:", removeError.message);
-        else console.log("4c. Successfully deleted old PDF.");
+        if (removeError) {
+          console.error("Failed to remove old PDF, continuing update:", removeError);
+        }
       }
 
       const pdfExt = newPdfFile.name.split('.').pop();
       const pdfName = `pdfs/${Math.random().toString(36).substring(2)}.${pdfExt}`;
-      console.log("4d. Uploading new PDF:", pdfName);
       const { error: uploadError } = await supabase.storage
         .from('oerc_assests')
         .upload(pdfName, newPdfFile);
       if (uploadError) throw uploadError;
-      console.log("4e. Successfully uploaded new PDF.");
       pdfUrl = supabase.storage.from('oerc_assests').getPublicUrl(pdfName).data.publicUrl;
     }
 
+    // Handle new Image file upload
     if (newImageFile) {
-        console.log("5a. New image file provided. Handling upload.");
       const oldImagePath = extractStoragePath(currentPaper.image_url);
       if (oldImagePath) {
-        console.log("5b. Deleting old image:", oldImagePath);
         const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldImagePath]);
-        if (removeError) console.error("Could not remove old image, continuing anyway:", removeError.message);
-        else console.log("5c. Successfully deleted old image.");
+        if (removeError) {
+          console.error("Failed to remove old image, continuing update:", removeError);
+        }
       }
 
       const imgExt = newImageFile.name.split('.').pop();
       const imgName = `images/${Math.random().toString(36).substring(2)}.${imgExt}`;
-      console.log("5d. Uploading new image:", imgName);
       const { error: uploadError } = await supabase.storage
         .from('oerc_assests')
         .upload(imgName, newImageFile);
       if (uploadError) throw uploadError;
-      console.log("5e. Successfully uploaded new image.");
       imageUrl = supabase.storage.from('oerc_assests').getPublicUrl(imgName).data.publicUrl;
     }
 
-    console.log("6. Updating paper metadata in DB.");
-    const updatePayload = {
+    // Update metadata in the database
+    const { error: updateError } = await supabase
+      .from('research_papers')
+      .update({
         title: paperUpdates.title,
         author: paperUpdates.author,
         date: paperUpdates.date,
@@ -216,22 +210,22 @@ export const updatePaper = async (
         image_url: imageUrl,
         pdf_url: pdfUrl,
         video_url: paperUpdates.videoUrl
-      };
-    console.log("Update payload:", updatePayload);
-
-    const { data, error: updateError } = await supabase
-      .from('research_papers')
-      .update(updatePayload)
+      })
       .eq('id', id)
-      .select()
-      .single();
 
-    if (updateError) {
-        console.error("Error during DB update:", updateError);
-        throw updateError;
-    }
-    console.log("7. Successfully updated paper in DB.");
+    if (updateError) throw updateError;
+    
+    // Re-fetch the data to get the updated record
+    const { data, error: refetchError } = await supabase
+        .from('research_papers')
+        .select('*')
+        .eq('id', id)
+        .single();
+    
+    if (refetchError) throw refetchError;
 
+
+    // Map snake_case database columns to camelCase types
     return {
       id: data.id,
       title: data.title,
@@ -245,7 +239,7 @@ export const updatePaper = async (
     } as ResearchPaper;
 
   } catch (error) {
-    console.error('FINAL CATCH: Error updating paper:', error);
+    console.error('Error updating paper:', error);
     return null;
   }
 };
