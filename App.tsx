@@ -11,7 +11,7 @@ import PrivacyPolicyContent from './components/PrivacyPolicyContent';
 import { fetchResearchPapers } from './services/geminiService';
 import { getPapers, signIn, signOut, getCurrentUser, getEvents, getFaqs, getGlobalConferences } from './services/supabaseService';
 import { supabase } from './supabaseClient'; // New import
-import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Lock, Play, Pause, Mail, Bot, Download, ArrowLeft } from 'lucide-react';
+import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Lock, Play, Pause, Mail, Bot, ArrowLeft } from 'lucide-react';
 import { Page, ResearchPaper, Event, GlobalConference, FAQ } from './types';
 
 
@@ -377,7 +377,6 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                        rel="noopener noreferrer"
                        className="w-full flex items-center justify-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-sm mb-3"
                      >
-                       <Download className="h-5 w-5 mr-2" />
                        Read Full Text Here
                      </a>
 
@@ -1023,9 +1022,9 @@ const EventsPage: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCur
           <p className="text-brand-100 mb-8 max-w-2xl mx-auto">
             Educators, organizations, and partners are welcome to suggest workshops or submit events to be considered for our calendar. If you are interested in sharing an event, please contact our coordination team.
           </p>
-          <button className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-brand-50 transition-colors">
+          <a href="https://forms.gle/6tuWMRaN3JZUPGF26" target="_blank" rel="noopener noreferrer" className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-brand-50 transition-colors">
             Submit Event Proposal
-          </button>
+          </a>
         </div>
 
         <div className="mt-16 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
