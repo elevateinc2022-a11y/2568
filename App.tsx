@@ -11,7 +11,7 @@ import PrivacyPolicyContent from './components/PrivacyPolicyContent';
 import { fetchResearchPapers } from './services/geminiService';
 import { getPapers, signIn, signOut, getCurrentUser, getEvents, getFaqs, getGlobalConferences } from './services/supabaseService';
 import { supabase } from './supabaseClient'; // New import
-import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Lock, Play, Pause, Mail, Bot, Download, ArrowLeft } from 'lucide-react';
+import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Lock, Play, Pause, Mail, Bot, ArrowLeft } from 'lucide-react';
 import { Page, ResearchPaper, Event, GlobalConference, FAQ } from './types';
 
 
@@ -50,7 +50,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
       {/* Hero Section */}
       <header className="relative bg-slate-900 overflow-hidden">
         <div className="absolute inset-0 opacity-40">
-            <img src="https://picsum.photos/seed/oerc_hero/1920/1080?grayscale&blur=2" alt="Background" className="w-full h-full object-cover" />
+            <img src={import.meta.env.BASE_URL + 'images/background.png'} alt="Background" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
@@ -266,23 +266,18 @@ const About: React.FC = () => (
   </div>
 );
 
-const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (papers: ResearchPaper[]) => void, selectedPaperId: string | null, onClearSelectedPaper: () => void }> = ({ initialPapers, setPapers, selectedPaperId, onClearSelectedPaper }) => {
+const ResearchPage: React.FC<{
+  initialPapers: ResearchPaper[],
+  setPapers: (papers: ResearchPaper[]) => void,
+  selectedPaperId: string | null,
+  onSelectPaper: (id: string) => void,
+  onClearSelectedPaper: () => void
+}> = ({ initialPapers, setPapers, selectedPaperId, onSelectPaper, onClearSelectedPaper }) => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedPaper, setSelectedPaper] = useState<ResearchPaper | null>(null);
 
-  useEffect(() => {
-    if (selectedPaperId && initialPapers.length > 0) {
-      const paper = initialPapers.find(p => p.id === selectedPaperId);
-      if (paper) {
-        setSelectedPaper(paper);
-      }
-    } else if (!selectedPaperId) {
-      setSelectedPaper(null); // Clear selected paper if ID is removed
-    }
-  }, [selectedPaperId, initialPapers]);
-
+  const selectedPaper = selectedPaperId ? initialPapers.find(p => p.id === selectedPaperId) : null;
 
   // Extract unique tags from current papers
   const availableTags = Array.from(new Set(initialPapers.flatMap(p => p.tags || []))).sort();
@@ -293,8 +288,8 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
     if (!query.trim()) return;
 
     setLoading(true);
-    setSelectedTags([]); 
-    setSelectedPaper(null); 
+    setSelectedTags([]);
+    onClearSelectedPaper();
 
     // Combine current papers with new AI fetched ones for the session
     const results = await fetchResearchPapers(query);
@@ -305,9 +300,9 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
   };
 
   const handleTagToggle = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag) 
+    setSelectedTags(prev =>
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag)
         : [...prev, tag]
     );
   };
@@ -320,7 +315,7 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
     return (
       <div className="py-12 bg-slate-50 min-h-screen">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <button 
+          <button
             onClick={onClearSelectedPaper}
             className="flex items-center text-brand-600 font-medium hover:underline mb-8"
           >
@@ -329,9 +324,9 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
 
           <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
             <div className="h-64 md:h-80 overflow-hidden relative">
-              <img 
-                src={selectedPaper.imageUrl || "https://picsum.photos/seed/default/1200/400"} 
-                alt={selectedPaper.title} 
+              <img
+                src={selectedPaper.imageUrl || "https://picsum.photos/seed/default/1200/400"}
+                alt={selectedPaper.title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
@@ -371,18 +366,15 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                <div className="space-y-6">
                   <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
                      <h3 className="font-bold text-slate-900 mb-4">Actions</h3>
-                     <a 
-                       href={selectedPaper.pdfUrl || "#"} 
+                     <a
+                       href={selectedPaper.pdfUrl || "#"}
                        target="_blank"
                        rel="noopener noreferrer"
                        className="w-full flex items-center justify-center bg-brand-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-brand-700 transition-colors shadow-sm mb-3"
                      >
-                       <Download className="h-5 w-5 mr-2" />
-                       View Paper (PDF)
+                       Read Full Text Here
                      </a>
-                     <p className="text-xs text-slate-500 text-center">
-                        Available for educational use under CC-BY license.
-                     </p>
+
                   </div>
                </div>
             </div>
@@ -396,7 +388,7 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
     <div className="py-12 bg-slate-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl font-serif font-bold text-slate-900 mb-2">Research Library</h1>
-            <p className="text-slate-600 mb-8">Search our AI-powered database or browse by topic.</p>
+
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Sidebar */}
@@ -405,11 +397,11 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                         <h3 className="font-bold text-slate-900 mb-4">Search</h3>
                         <form onSubmit={(e) => handleSearch(e)} className="relative">
-                          <input 
-                              type="text" 
+                          <input
+                              type="text"
                               value={searchTerm}
                               onChange={(e) => setSearchTerm(e.target.value)}
-                              placeholder="Keywords..." 
+                              placeholder="Keywords..."
                               className="w-full pl-3 pr-10 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"
                           />
                           <button type="submit" className="absolute right-2 top-2 text-slate-400 hover:text-brand-600">
@@ -431,7 +423,7 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                                 {availableTags.map(tag => (
                                     <label key={tag} className="flex items-start space-x-3 cursor-pointer group">
                                         <div className="relative flex items-center h-5">
-                                            <input 
+                                            <input
                                                 type="checkbox"
                                                 checked={selectedTags.includes(tag)}
                                                 onChange={() => handleTagToggle(tag)}
@@ -461,14 +453,14 @@ const ResearchPage: React.FC<{ initialPapers: ResearchPaper[], setPapers: (paper
                                 Showing {displayedPapers.length} results
                                 {selectedTags.length > 0 && <span> matching <strong>all {selectedTags.length}</strong> selected topic(s)</span>}
                             </div>
-                            
+
                             {displayedPapers.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {displayedPapers.map((paper, idx) => (
-                                        <ResearchCard 
-                                          key={paper.id || idx} 
-                                          paper={paper} 
-                                          onClick={(p) => setSelectedPaper(p)}
+                                        <ResearchCard
+                                          key={paper.id || idx}
+                                          paper={paper}
+                                          onClick={(p) => onSelectPaper(p.id)}
                                         />
                                     ))}
                                 </div>
@@ -774,7 +766,7 @@ const Contact: React.FC = () => (
          {/* Image Section */}
          <div className="md:w-1/2 h-64 md:h-auto">
             <img 
-              src="https://picsum.photos/seed/oerc_office/800/800" 
+              src={import.meta.env.BASE_URL + 'images/contact.png'} 
               alt="OERC Office" 
               className="w-full h-full object-cover"
             />
@@ -1025,9 +1017,9 @@ const EventsPage: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCur
           <p className="text-brand-100 mb-8 max-w-2xl mx-auto">
             Educators, organizations, and partners are welcome to suggest workshops or submit events to be considered for our calendar. If you are interested in sharing an event, please contact our coordination team.
           </p>
-          <button className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-brand-50 transition-colors">
+          <a href="https://forms.gle/6tuWMRaN3JZUPGF26" target="_blank" rel="noopener noreferrer" className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-brand-50 transition-colors">
             Submit Event Proposal
-          </button>
+          </a>
         </div>
 
         <div className="mt-16 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
@@ -1093,7 +1085,7 @@ const App: React.FC = () => {
     switch (currentPage) {
       case Page.HOME: return <Home setCurrentPage={setCurrentPage} setSelectedPaperId={setSelectedPaperId} papers={papers} />;
       case Page.ABOUT: return <About />;
-      case Page.RESEARCH: return <ResearchPage initialPapers={papers} setPapers={setPapers} selectedPaperId={selectedPaperId} onClearSelectedPaper={() => setSelectedPaperId(null)} />;
+      case Page.RESEARCH: return <ResearchPage initialPapers={papers} setPapers={setPapers} selectedPaperId={selectedPaperId} onSelectPaper={(id) => setSelectedPaperId(id)} onClearSelectedPaper={() => setSelectedPaperId(null)} />;
       case Page.EVENTS: return <EventsPage setCurrentPage={setCurrentPage} />;
       case Page.MEMBERSHIP: return <MembershipPage />;
       case Page.CONTACT: return <Contact />;

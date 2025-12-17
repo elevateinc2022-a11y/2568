@@ -18,6 +18,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
   const [newAuthor, setNewAuthor] = useState('');
   const [newAbstract, setNewAbstract] = useState('');
   const [newTags, setNewTags] = useState('');
+  const [newDate, setNewDate] = useState('');
   const [newFile, setNewFile] = useState<File | null>(null);
   const [newImage, setNewImage] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -31,8 +32,11 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
     // Parse tags from comma separated string
     const tagsArray = newTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
 
+    // Use today's date if no date is selected
+    const finalDate = newDate || new Date().toISOString().split('T')[0];
+
     // Call Supabase Service
-    const uploadedPaper = await uploadPaperToLibrary(newTitle, newAuthor, newAbstract, newFile, newImage, tagsArray);
+    const uploadedPaper = await uploadPaperToLibrary(newTitle, newAuthor, newAbstract, newFile, newImage, tagsArray, finalDate);
 
     if (uploadedPaper) {
       setPapers(prev => [uploadedPaper, ...prev]);
@@ -41,6 +45,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
       setNewAuthor('');
       setNewAbstract('');
       setNewTags('');
+      setNewDate('');
       setNewFile(null);
       setNewImage(null);
       setActiveTab('list');
@@ -67,6 +72,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
     setNewAuthor(paper.author);
     setNewAbstract(paper.abstract);
     setNewTags(paper.tags ? paper.tags.join(', ') : '');
+    setNewDate(new Date(paper.date).toISOString().split('T')[0]);
     // Files cannot be pre-filled, user will need to re-upload if needed
     setNewFile(null); 
     setNewImage(null);
@@ -79,6 +85,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
 
     setUploading(true);
     const tagsArray = newTags.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    const finalDate = newDate || new Date().toISOString().split('T')[0];
 
     const updatedPaper = await updatePaper(
       editingPaper.id,
@@ -87,6 +94,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
         author: newAuthor,
         abstract: newAbstract,
         tags: tagsArray,
+        date: finalDate,
         pdfUrl: editingPaper.pdfUrl, // Keep existing if not new file
         imageUrl: editingPaper.imageUrl, // Keep existing if not new file
       },
@@ -102,6 +110,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
       setNewAuthor('');
       setNewAbstract('');
       setNewTags('');
+      setNewDate('');
       setNewFile(null);
       setNewImage(null);
       setActiveTab('list');
@@ -145,7 +154,7 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
                   <tr key={paper.id} className="border-b border-slate-50 hover:bg-slate-50">
                     <td className="py-4 pr-4 font-medium text-slate-900">{paper.title}</td>
                     <td className="py-4 text-slate-600">{paper.author}</td>
-                    <td className="py-4 text-slate-500 text-sm">{new Date(paper.date).toLocaleDateString()}</td>
+                    <td className="py-4 text-slate-500 text-sm">{new Date(paper.date.replace(/-/g, '/')).toLocaleDateString()}</td>
                     <td className="py-4 text-right flex justify-end gap-2">
                       <button 
                         onClick={() => handleEditClick(paper)}
@@ -174,6 +183,10 @@ const PaperManagement: React.FC<PaperManagementProps> = ({ papers, setPapers }) 
             <div>
                <label className="block text-sm font-bold text-slate-700 mb-2">Author Name</label>
                <input required value={newAuthor} onChange={e => setNewAuthor(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" />
+            </div>
+            <div>
+               <label className="block text-sm font-bold text-slate-700 mb-2">Publication Date</label>
+               <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" />
             </div>
             <div>
                <label className="block text-sm font-bold text-slate-700 mb-2">Abstract</label>

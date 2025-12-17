@@ -2,6 +2,7 @@
   "name": "oerc-website",
   "private": true,
   "version": "1.0.0",
+  "homepage": "https://elevateinc2022-a11y.github.io/2568",
   "type": "module",
   "scripts": {
     "dev": "vite",

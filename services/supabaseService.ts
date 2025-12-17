@@ -152,15 +152,22 @@ export const updatePaper = async (
       .eq('id', id)
       .single();
 
-    if (fetchError) throw fetchError;
-
+    if (fetchError) {
+      console.error('Error fetching paper to update:', fetchError);
+      throw fetchError;
+    }
+    if (!currentPaper) {
+        throw new Error(`Paper with id ${id} not found.`);
+    }
 
     // Handle new PDF file upload
     if (newPdfFile) {
-      // Delete old PDF if it exists
       const oldPdfPath = extractStoragePath(currentPaper.pdf_url);
       if (oldPdfPath) {
-        await supabase.storage.from('oerc_assests').remove([oldPdfPath]);
+        const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldPdfPath]);
+        if (removeError) {
+          console.error("Failed to remove old PDF, continuing update:", removeError);
+        }
       }
 
       const pdfExt = newPdfFile.name.split('.').pop();
@@ -174,10 +181,12 @@ export const updatePaper = async (
 
     // Handle new Image file upload
     if (newImageFile) {
-      // Delete old Image if it exists
       const oldImagePath = extractStoragePath(currentPaper.image_url);
       if (oldImagePath) {
-        await supabase.storage.from('oerc_assests').remove([oldImagePath]);
+        const { error: removeError } = await supabase.storage.from('oerc_assests').remove([oldImagePath]);
+        if (removeError) {
+          console.error("Failed to remove old image, continuing update:", removeError);
+        }
       }
 
       const imgExt = newImageFile.name.split('.').pop();
@@ -190,12 +199,12 @@ export const updatePaper = async (
     }
 
     // Update metadata in the database
-    const { data, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from('research_papers')
       .update({
         title: paperUpdates.title,
         author: paperUpdates.author,
-        date: paperUpdates.date ? new Date(paperUpdates.date).toISOString() : undefined,
+        date: paperUpdates.date,
         abstract: paperUpdates.abstract,
         tags: paperUpdates.tags,
         image_url: imageUrl,
@@ -203,10 +212,18 @@ export const updatePaper = async (
         video_url: paperUpdates.videoUrl
       })
       .eq('id', id)
-      .select()
-      .single();
 
     if (updateError) throw updateError;
+    
+    // Re-fetch the data to get the updated record
+    const { data, error: refetchError } = await supabase
+        .from('research_papers')
+        .select('*')
+        .eq('id', id)
+        .single();
+    
+    if (refetchError) throw refetchError;
+
 
     // Map snake_case database columns to camelCase types
     return {
@@ -408,7 +425,8 @@ export const uploadPaperToLibrary = async (
   abstract: string,
   pdfFile: File,
   imageFile: File | null,
-  tags: string[]
+  tags: string[],
+  date?: string
 ): Promise<ResearchPaper | null> => {
   try {
     // 1. Upload the PDF file
@@ -453,7 +471,7 @@ export const uploadPaperToLibrary = async (
           title,
           author,
           abstract,
-          date: new Date().toISOString(),
+          date: date || new Date().toISOString().split('T')[0],
           tags: tags.length > 0 ? tags : ['Research'], 
           image_url: imageUrl,
           pdf_url: pdfUrl,

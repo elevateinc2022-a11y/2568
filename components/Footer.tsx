@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Page } from '../types';
 
 interface FooterProps {
@@ -30,14 +30,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onShowFaqModal }) => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <div className="space-y-3 text-sm text-brand-100">
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2" />
-                <span>1815 Sir Isaac Brock Way, St. Catharines, ON</span>
-              </div>
-              <div className="flex items-center">
-                <Phone className="h-4 w-4 mr-2" />
-                <span>(905) 555-0123</span>
-              </div>
+              <p>Have questions or need more information? We’re happy to help!</p>
               <div className="flex items-center">
                 <Mail className="h-4 w-4 mr-2" />
                 <span>contact@oerc.ca</span>
