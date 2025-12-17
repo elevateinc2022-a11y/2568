@@ -766,7 +766,7 @@ const Contact: React.FC = () => (
          {/* Image Section */}
          <div className="md:w-1/2 h-64 md:h-auto">
             <img 
-              src="https://picsum.photos/seed/oerc_office/800/800" 
+              src={import.meta.env.BASE_URL + 'images/contact.png'} 
               alt="OERC Office" 
               className="w-full h-full object-cover"
             />
