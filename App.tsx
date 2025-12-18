@@ -93,7 +93,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 min-h-[450px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 min-h-[225px]">
               {/* Image Side */}
               <div className="relative h-64 md:h-auto overflow-hidden">
                 <img 
