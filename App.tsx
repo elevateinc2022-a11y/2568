@@ -130,7 +130,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
                     <span>{new Date(currentPaper.date).toLocaleDateString()}</span>
                 </div>
 
-                <p key={`abs-${currentPaper.id}`} className="text-slate-600 text-lg leading-relaxed mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <p key={`abs-${currentPaper.id}`} className="text-slate-600 text-lg leading-relaxed mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 line-clamp-3">
                    {currentPaper.abstract}
                 </p>
 
