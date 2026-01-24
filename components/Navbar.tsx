@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, currentUser, o
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center cursor-pointer" onClick={() => onNavigate(Page.HOME)}>
-            <GraduationCap className="h-10 w-10 text-brand-700" />
+            <img src={import.meta.env.BASE_URL + 'images/my_logo.png'} alt="OERC Logo" className="h-10 w-10 object-contain" />
             <div className="ml-3">
               <span className="block text-xl font-bold text-brand-900 tracking-tight leading-none">OERC</span>
               <span className="block text-xs font-medium text-brand-600 uppercase tracking-widest">Ontario Educational Research Consortium</span>

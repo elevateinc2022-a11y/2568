@@ -24,6 +24,7 @@ const EventManagement: React.FC<EventManagementProps> = ({ initialEvents }) => {
       setLoading(true);
       const fetchedEvents = await getEvents();
       setEvents(fetchedEvents);
+      console.log("Fetched Events with IDs:", fetchedEvents.map(event => ({ id: event.id, title: event.title, date: new Date(event.date).toLocaleDateString(), location: event.location })));
       setLoading(false);
     };
     loadEvents();
