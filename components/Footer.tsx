@@ -1,13 +1,27 @@
 import React from 'react';
 import { Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Added useNavigate
 import { Page } from '../types';
 
 interface FooterProps {
-  onNavigate: (page: Page) => void;
-  onShowFaqModal: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigate, onShowFaqModal }) => {
+const Footer: React.FC<FooterProps> = () => {
+  const navigate = useNavigate();
+
+  const getPagePath = (page: Page): string => {
+    switch (page) {
+      case Page.HOME: return '/';
+      case Page.ABOUT: return '/about';
+      case Page.RESEARCH: return '/research';
+      case Page.EVENTS: return '/events';
+      case Page.MEMBERSHIP: return '/membership';
+      case Page.CONTACT: return '/contact';
+      case Page.PRIVACY: return '/privacy';
+      case Page.FAQ: return '/faq';
+      default: return '/';
+    }
+  };
   return (
     <footer className="bg-brand-900 text-white pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,10 +35,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onShowFaqModal }) => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm text-brand-100">
-              <li onClick={() => onNavigate(Page.MEMBERSHIP)} className="hover:text-white cursor-pointer transition-colors">Get Involved</li>
-              <li onClick={() => onNavigate(Page.RESEARCH)} className="hover:text-white cursor-pointer transition-colors">Research</li>
-              <li onClick={onShowFaqModal} className="hover:text-white cursor-pointer transition-colors">FAQ's</li>
-              <li onClick={() => onNavigate(Page.PRIVACY)} className="hover:text-white cursor-pointer transition-colors">Privacy Policy</li>
+              <li onClick={() => navigate(getPagePath(Page.MEMBERSHIP))} className="hover:text-white cursor-pointer transition-colors">Get Involved</li>
+              <li onClick={() => navigate(getPagePath(Page.RESEARCH))} className="hover:text-white cursor-pointer transition-colors">Research</li>
+              <li onClick={() => navigate(getPagePath(Page.FAQ))} className="hover:text-white cursor-pointer transition-colors">FAQ's</li>
+              <li onClick={() => navigate(getPagePath(Page.PRIVACY))} className="hover:text-white cursor-pointer transition-colors">Privacy Policy</li>
             </ul>
           </div>
           <div>

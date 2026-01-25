@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { Resend } from "npm:resend";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL");
 
 // The default CORS headers are fine for this function.
 const corsHeaders = {
@@ -46,24 +47,43 @@ serve(async (req) => {
 
     const resend = new Resend(RESEND_API_KEY);
 
-    // Send the welcome email.
-    // IMPORTANT: Replace "from@example.com" with your actual "from" email address.
-    const { data, error } = await resend.emails.send({
-      from: "Your Name <from@example.com>",
+    // Send the welcome email to the subscriber.
+    const { data: subscriberData, error: subscriberError } = await resend.emails.send({
+      from: "OERC Newsletter <onboarding@resend.dev>",
       to: [userEmail],
-      subject: "🎉 Welcome to the Newsletter!",
-      html: "<h1>Welcome!</h1><p>Thanks for subscribing to our newsletter. We're excited to have you.</p>",
+      subject: "🎉 Welcome to the OERC Newsletter!",
+      html: `<h1>Welcome!</h1><p>Thanks for subscribing to our newsletter. We're excited to have you.</p>`,
     });
 
-    if (error) {
-      console.error("Error sending email via Resend:", error);
-      return new Response(JSON.stringify({ error: error.message }), {
+    if (subscriberError) {
+      console.error("Error sending welcome email via Resend:", subscriberError);
+      // Even if subscriber email fails, try to notify admin if possible
+    }
+
+    // Send admin notification email
+    if (ADMIN_EMAIL) {
+      const { data: adminData, error: adminError } = await resend.emails.send({
+        from: "OERC Admin Notifications <onboarding@resend.dev>",
+        to: [ADMIN_EMAIL],
+        subject: `New Newsletter Subscriber: ${userEmail}`,
+        html: `<p>A new user has subscribed to the OERC newsletter:</p><p><strong>Email:</strong> ${userEmail}</p>`,
+      });
+
+      if (adminError) {
+        console.error("Error sending admin notification email via Resend:", adminError);
+      }
+    } else {
+      console.warn("ADMIN_EMAIL environment variable is not set. Admin will not receive notifications for new subscriptions.");
+    }
+
+    if (subscriberError) { // If original subscriber email failed, return that error
+      return new Response(JSON.stringify({ error: subscriberError.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ message: "Email sent successfully", data }), {
+    return new Response(JSON.stringify({ message: "Emails processed successfully", subscriberEmailData: subscriberData }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

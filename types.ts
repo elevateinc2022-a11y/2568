@@ -157,4 +157,5 @@ export enum Page {
   MEMBERSHIP = 'membership',
   CONTACT = 'contact',
   PRIVACY = 'privacy',
+  FAQ = 'faq',
 }
