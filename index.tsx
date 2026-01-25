@@ -11,7 +11,7 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <HashRouter>
+    <HashRouter basename="/2568">
       <App />
     </HashRouter>
   </React.StrictMode>

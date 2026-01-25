@@ -132,13 +132,13 @@ const DashboardPage: React.FC<{
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-serif font-bold text-slate-900">Dashboard</h1>
-              <Link to="/" className="text-sm text-brand-600 hover:underline">Home</Link>
-              <Link to="/about" className="text-sm text-brand-600 hover:underline">About</Link>
-              <Link to="/research" className="text-sm text-brand-600 hover:underline">Research</Link>
-              <Link to="/events" className="text-sm text-brand-600 hover:underline">Events</Link>
-              <Link to="/membership" className="text-sm text-brand-600 hover:underline">Get Involved</Link>
-              <Link to="/contact" className="text-sm text-brand-600 hover:underline">Contact</Link>
-              <Link to="/faq" className="text-sm text-brand-600 hover:underline">FAQ</Link>
+              <Link to="/#/" className="text-sm text-brand-600 hover:underline">Home</Link>
+              <Link to="/#/about" className="text-sm text-brand-600 hover:underline">About</Link>
+              <Link to="/#/research" className="text-sm text-brand-600 hover:underline">Research</Link>
+              <Link to="/#/events" className="text-sm text-brand-600 hover:underline">Events</Link>
+              <Link to="/#/membership" className="text-sm text-brand-600 hover:underline">Get Involved</Link>
+              <Link to="/#/contact" className="text-sm text-brand-600 hover:underline">Contact</Link>
+              <Link to="/#/faq" className="text-sm text-brand-600 hover:underline">FAQ</Link>
             </div>
             <div className="flex items-center gap-4">
                <span className="text-sm text-slate-500 hidden md:inline">{currentUser.email}</span>
