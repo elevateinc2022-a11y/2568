@@ -349,10 +349,6 @@ const ResearchPage: React.FC<{
                      <p className="text-slate-600 leading-relaxed text-lg">
                        {selectedPaper.abstract}
                      </p>
-                     <p className="text-slate-600 leading-relaxed mt-4">
-                       {/* Placeholder for full content */}
-                       This paper explores the theoretical underpinnings and practical applications of the subject matter. It draws upon a wide range of case studies and empirical data to formulate its conclusions. The findings suggest significant implications for educators and policymakers alike, offering a roadmap for future development in this critical area of study.
-                     </p>
                   </div>
                </div>
 
