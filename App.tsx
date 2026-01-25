@@ -2,23 +2,22 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ResearchCard from './components/ResearchCard';
-import PaperManagement from './components/PaperManagement';
-import EventManagement from './components/EventManagement';
-import ConferenceManagement from './components/ConferenceManagement';
-import FAQManagement from './components/FAQManagement';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import PrivacyPolicyContent from './components/PrivacyPolicyContent';
-import { fetchResearchPapers } from './services/geminiService';
-import { getPapers, signIn, signOut, getCurrentUser, getEvents, getFaqs, getGlobalConferences } from './services/supabaseService';
+
+import { getPapers, signOut, getCurrentUser, getEvents, getFaqs, getGlobalConferences } from './services/supabaseService';
 import { supabase } from './supabaseClient'; // New import
-import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Lock, Play, Pause, Mail, Bot, ArrowLeft } from 'lucide-react';
-import { Page, ResearchPaper, Event, GlobalConference, FAQ } from './types';
+import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Play, Pause, Mail, ArrowLeft } from 'lucide-react';
+import DashboardPage from './components/DashboardPage';
+import { ResearchPaper, Event, GlobalConference, FAQ } from './types';
+
 
 
 
 // --- Page Components ---
 
-const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId: (id: string | null) => void, papers: ResearchPaper[] }> = ({ setCurrentPage, setSelectedPaperId, papers }) => {
+const Home: React.FC<{ setSelectedPaperId: (id: string | null) => void, papers: ResearchPaper[] }> = ({ setSelectedPaperId, papers }) => {
+  const navigate = useNavigate(); // Add useNavigate hook
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const featured = papers.slice(0, 4);
@@ -62,10 +61,10 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
               Dedicated to advancing educational practices in Ontario through rigorous research, collaboration, and data-driven insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={() => setCurrentPage(Page.RESEARCH)} className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-brand-500/30 transition-all duration-300 flex items-center justify-center">
+              <button onClick={() => navigate('/research')} className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-brand-500/30 transition-all duration-300 flex items-center justify-center">
                 Explore Research <ChevronRight className="ml-2 h-5 w-5" />
               </button>
-              <button onClick={() => setCurrentPage(Page.ABOUT)} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/30 font-semibold rounded-lg transition-all duration-300">
+              <button onClick={() => navigate('/about')} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/30 font-semibold rounded-lg transition-all duration-300">
                 Learn About Us
               </button>
             </div>
@@ -136,7 +135,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
 
                 {/* Controls */}
                 <div className="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between">
-                    <button onClick={() => { setCurrentPage(Page.RESEARCH); setSelectedPaperId(currentPaper.id); }} className="text-brand-700 font-semibold hover:text-brand-800 transition-colors flex items-center">
+                    <button onClick={() => { navigate('/research'); setSelectedPaperId(currentPaper.id); }} className="text-brand-700 font-semibold hover:text-brand-800 transition-colors flex items-center">
                         Read Full Paper <ChevronRight className="ml-1 h-4 w-4" />
                     </button>
 
@@ -193,9 +192,7 @@ const Home: React.FC<{ setCurrentPage: (page: Page) => void, setSelectedPaperId:
                     <p className="text-slate-600">Leveraging data analytics to improve student assessment models and feedback mechanisms.</p>
                 </div>
                 <div className="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300 text-center">
-                    <div className="w-16 h-16 mx-auto bg-brand-100 rounded-full flex items-center justify-center mb-6 text-brand-600">
-                        <Bot className="h-8 w-8" />
-                    </div>
+
                     <h3 className="text-xl font-bold text-slate-900 mb-3">AI in Education</h3>
                     <p className="text-slate-600">Exploring ethical AI integration to personalize learning paths and support educator capabilities.</p>
                 </div>
@@ -268,11 +265,10 @@ const About: React.FC = () => (
 
 const ResearchPage: React.FC<{
   initialPapers: ResearchPaper[],
-  setPapers: (papers: ResearchPaper[]) => void,
   selectedPaperId: string | null,
   onSelectPaper: (id: string) => void,
   onClearSelectedPaper: () => void
-}> = ({ initialPapers, setPapers, selectedPaperId, onSelectPaper, onClearSelectedPaper }) => {
+}> = ({ initialPapers, selectedPaperId, onSelectPaper, onClearSelectedPaper }) => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -291,11 +287,8 @@ const ResearchPage: React.FC<{
     setSelectedTags([]);
     onClearSelectedPaper();
 
-    // Combine current papers with new AI fetched ones for the session
-    const results = await fetchResearchPapers(query);
-    if (results && results.length > 0) {
-      setPapers([...results, ...initialPapers]); // Prepend new results
-    }
+    // Original search logic removed as Gemini AI functionality is deprecated.
+    // The search term can now be used for client-side filtering or other integrations.
     setLoading(false);
   };
 
@@ -483,163 +476,160 @@ const ResearchPage: React.FC<{
 
 // --- Admin Component (New) ---
 
-const DashboardPage: React.FC<{ 
-  papers: ResearchPaper[], 
-  setPapers: React.Dispatch<React.SetStateAction<ResearchPaper[]>>;
-  currentUser: any | null; // Pass currentUser from App.tsx
-  setCurrentUser: React.Dispatch<React.SetStateAction<any | null>>; // Pass setCurrentUser from App.tsx
-  onSignOut: () => void; // Pass onSignOut from App.tsx
-}> = ({ papers, setPapers, currentUser, setCurrentUser, onSignOut }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
-  const [activeManagementTab, setActiveManagementTab] = useState<'papers' | 'events' | 'conferences' | 'faqs'>('papers');
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
-  const [conferences, setConferences] = useState<GlobalConference[]>([]);
-  const [loadingConferences, setLoadingConferences] = useState(true);
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
-  const [loadingFaqs, setLoadingFaqs] = useState(true);
+// const DashboardPage: React.FC<{ 
+//   papers: ResearchPaper[], 
+//   setPapers: React.Dispatch<React.SetStateAction<ResearchPaper[]>>;
+//   currentUser: any | null; // Pass currentUser from App.tsx
+//   setCurrentUser: React.Dispatch<React.SetStateAction<any | null>>; // Pass setCurrentUser from App.tsx
+//   onSignOut: () => void; // Pass onSignOut from App.tsx
+// }> = ({ papers, setPapers, currentUser, setCurrentUser, onSignOut }) => {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [authError, setAuthError] = useState('');
+//   const [activeManagementTab, setActiveManagementTab] = useState<'papers' | 'events' | 'conferences' | 'faqs'>('papers');
+//   const [events, setEvents] = useState<Event[]>([]);
+//   const [loadingEvents, setLoadingEvents] = useState(true);
+//   const [conferences, setConferences] = useState<GlobalConference[]>([]);
+//   const [loadingConferences, setLoadingConferences] = useState(true);
+//   const [faqs, setFaqs] = useState<FAQ[]>([]);
+//   const [loadingFaqs, setLoadingFaqs] = useState(true);
 
 
-  useEffect(() => {
-    // currentUser is managed by App.tsx, no need to fetch here again.
-    // If currentUser becomes null, it means logout happened from Navbar or elsewhere.
-    // If currentUser exists, we are already authenticated.
-  }, [currentUser]);
+//   useEffect(() => {
+//     // currentUser is managed by App.tsx, no need to fetch here again.
+//     // If currentUser becomes null, it means logout happened from Navbar or elsewhere.
+//     // If currentUser exists, we are already authenticated.
+//   }, [currentUser]);
 
-  useEffect(() => {
-    const loadEventsData = async () => {
-      setLoadingEvents(true);
-      const data = await getEvents();
-      setEvents(data);
-      setLoadingEvents(false);
-    };
-    loadEventsData();
-  }, []); // Empty dependency array means it runs once on mount
+//   useEffect(() => {
+//     const loadEventsData = async () => {
+//       setLoadingEvents(true);
+//       const data = await getEvents();
+//       setEvents(data);
+//       setLoadingEvents(false);
+//     };
+//     loadEventsData();
+//   }, []); // Empty dependency array means it runs once on mount
 
-  useEffect(() => {
-    const loadConferencesData = async () => {
-      setLoadingConferences(true);
-      const data = await getGlobalConferences();
-      setConferences(data);
-      setLoadingConferences(false);
-    };
-    loadConferencesData();
-  }, []); // Empty dependency array means it runs once on mount
+//   useEffect(() => {
+//     const loadConferencesData = async () => {
+//       setLoadingConferences(true);
+//       const data = await getGlobalConferences();
+//       setConferences(data);
+//       setLoadingConferences(false);
+//     };
+//     loadConferencesData();
+//   }, []); // Empty dependency array means it runs once on mount
 
-  useEffect(() => {
-    const loadFaqsData = async () => {
-      setLoadingFaqs(true);
-      const data = await getFaqs();
-      setFaqs(data);
-      setLoadingFaqs(false);
-    };
-    loadFaqsData();
-  }, []); // Empty dependency array means it runs once on mount
+//   useEffect(() => {
+//     const loadFaqsData = async () => {
+//       setLoadingFaqs(true);
+//       const data = await getFaqs();
+//       setFaqs(data);
+//       setLoadingFaqs(false);
+//     };
+//     loadFaqsData();
+//   }, []); // Empty dependency array means it runs once on mount
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthError('');
-    const { data, error } = await signIn(email, password);
-    if (error) {
-      setAuthError(error.message);
-    } else {
-      setCurrentUser(data.user); // Use setCurrentUser from props
-    }
-  };
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-          <div className="flex justify-center mb-6">
-            <div className="bg-brand-100 p-3 rounded-full">
-               <Lock className="h-6 w-6 text-brand-600" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-center text-slate-900 mb-6">Sign In</h2>
-          {authError && (
-            <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm text-center">
-              {authError}
-            </div>
-          )}
-          <form onSubmit={handleLogin}>
-            <input 
-              type="email" 
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4 focus:ring-2 focus:ring-brand-500 outline-none"
-            />
-            <input 
-              type="password" 
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4 focus:ring-2 focus:ring-brand-500 outline-none"
-            />
-            <button type="submit" className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700">
-              Access Dashboard
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+//   const handleLogin = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setAuthError('');
+//     const { data, error } = await signIn(email, password);
+//     if (error) {
+//       setAuthError(error.message);
+//     } else {
+//       setCurrentUser(data.user); // Use setCurrentUser from props
+//     }
+//   };
+//   if (!currentUser) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-slate-100">
+//         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+//           <div className="flex justify-center mb-6">
+//             <div className="bg-brand-100 p-3 rounded-full">
+//                <Lock className="h-6 w-6 text-brand-600" />
+//             </div>
+//           </div>
+//           <h2 className="text-2xl font-bold text-center text-slate-900 mb-6">Sign In</h2>
+//           {authError && (
+//             <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm text-center">
+//               {authError}
+//             </div>
+//           )}
+//           <form onSubmit={handleLogin}>
+//             <input 
+//               type="email" 
+//               value={email}
+//               onChange={e => setEmail(e.target.value)}
+//               placeholder="Email"
+//               className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4 focus:ring-2 focus:ring-brand-500 outline-none"
+//             />
+//             <input 
+//               type="password" 
+//               value={password}
+//               onChange={e => setPassword(e.target.value)}
+//               placeholder="Password"
+//               className="w-full px-4 py-3 border border-slate-300 rounded-lg mb-4 focus:ring-2 focus:ring-brand-500 outline-none"
+//             />
+//             <button type="submit" className="w-full bg-brand-600 text-white py-3 rounded-lg font-bold hover:bg-brand-700">
+//               Access Dashboard
+//             </button>
+//           </form>
+//         </div>
+//       </div>
+//     );
+//   }
 
-    return (
-      <div className="min-h-screen bg-slate-50 py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-serif font-bold text-slate-900">Dashboard</h1>
-            <div className="flex items-center gap-4">
-               <span className="text-sm text-slate-500 hidden md:inline">{currentUser.email}</span>
-               <button onClick={onSignOut} className="text-slate-500 hover:text-red-600">Logout</button>
-            </div>
-          </div>
+//     return (
+//       <div className="min-h-screen bg-slate-50 py-12">
+//         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex justify-between items-center mb-8">
+//             <h1 className="text-3xl font-serif font-bold text-slate-900">Dashboard</h1>
+//             <div className="flex items-center gap-4">
+//                <span className="text-sm text-slate-500 hidden md:inline">{currentUser.email}</span>
+//                <button onClick={onSignOut} className="text-slate-500 hover:text-red-600">Logout</button>
+//             </div>
+//           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="flex border-b border-slate-200">
-               <button
-                 onClick={() => setActiveManagementTab('papers')}
-                 className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'papers' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
-               >
-                 Papers
-               </button>
-               <button
-                 onClick={() => setActiveManagementTab('events')}
-                 className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'events' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
-               >
-                 Events
-               </button>
-               <button
-                 onClick={() => setActiveManagementTab('conferences')}
-                 className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'conferences' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
-               >
-                 Conferences
-               </button>
-               <button
-                 onClick={() => setActiveManagementTab('faqs')}
-                 className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'faqs' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
-               >
-                 FAQs
-               </button>
-            </div>
+//           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+//             <div className="flex border-b border-slate-200">
+//                <button
+//                  onClick={() => setActiveManagementTab('papers')}
+//                  className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'papers' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
+//                >
+//                  Papers
+//                </button>
+//                <button
+//                  onClick={() => setActiveManagementTab('events')}
+//                  className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'events' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
+//                >
+//                  Events
+//                </button>
+//                <button
+//                  onClick={() => setActiveManagementTab('conferences')}
+//                  className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'conferences' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
+//                >
+//                  Conferences
+//                </button>
+//                <button
+//                  onClick={() => setActiveManagementTab('faqs')}
+//                  className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'faqs' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
+//                >
+//                  FAQs
+//                </button>
+//             </div>
 
-            <div className="p-8">
-              {activeManagementTab === 'papers' && <PaperManagement papers={papers} setPapers={setPapers} />}
-              {activeManagementTab === 'events' && (loadingEvents ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <EventManagement initialEvents={events} />)}
-              {activeManagementTab === 'conferences' && (loadingConferences ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <ConferenceManagement initialConferences={conferences} />)}
-              {activeManagementTab === 'faqs' && (loadingFaqs ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <FAQManagement initialFaqs={faqs} />)}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-};
-
-// --- Updated Membership Page with Mock Stripe ---
-
+//             <div className="p-8">
+//               {activeManagementTab === 'papers' && <PaperManagement papers={papers} setPapers={setPapers} />}
+//               {activeManagementTab === 'events' && (loadingEvents ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <EventManagement initialEvents={events} />)}
+//               {activeManagementTab === 'conferences' && (loadingConferences ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <ConferenceManagement initialConferences={conferences} />)}
+//               {activeManagementTab === 'faqs' && (loadingFaqs ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <FAQManagement initialFaqs={faqs} />)}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+// };
 const MembershipPage: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
@@ -869,7 +859,8 @@ const FAQPage: React.FC = () => {
   );
 };
 
-const EventsPage: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCurrentPage }) => {
+const EventsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [globalConferences, setGlobalConferences] = useState<GlobalConference[]>([]);
@@ -933,7 +924,7 @@ const EventsPage: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCur
                     </div>
                     <div className="mt-auto border-t border-slate-100 pt-4 flex justify-end">
                       <button 
-                        onClick={() => setCurrentPage(Page.MEMBERSHIP)}
+                        onClick={() => navigate('/membership')}
                         className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
                       >
                         Register
@@ -1030,34 +1021,29 @@ const EventsPage: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCur
   );
 };
 
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 //... (keep existing imports)
 
 // ... (keep existing page components)
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
-  const [showFaqModal, setShowFaqModal] = useState(false);
-  // Lift paper state to App level so Admin changes reflect across the app
   const [papers, setPapers] = useState<ResearchPaper[]>([]);
-  const [currentUser, setCurrentUser] = useState<any | null>(null); // New state for current user
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Load initial papers from Supabase
     getPapers().then(data => {
       setPapers(data);
     });
 
-    // Listen for auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setCurrentUser(session?.user || null);
       }
     );
 
-    // Initial check for current user, in case onAuthStateChange doesn't fire immediately
     getCurrentUser().then(user => {
       setCurrentUser(user);
     });
@@ -1067,73 +1053,31 @@ const App: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (location.pathname === '/admin') {
-      // You can add logic here if you want to do something when admin route is accessed
-    } else {
-      // Reset to home or other default page when not on admin route
-      // setCurrentPage(Page.HOME);
-    }
-  }, [location.pathname]);
-
   const handleLogout = async () => {
     await signOut();
     setCurrentUser(null);
+    navigate('/');
   };
 
-  const renderMainContent = () => {
-    switch (currentPage) {
-      case Page.HOME: return <Home setCurrentPage={setCurrentPage} setSelectedPaperId={setSelectedPaperId} papers={papers} />;
-      case Page.ABOUT: return <About />;
-      case Page.RESEARCH: return <ResearchPage initialPapers={papers} setPapers={setPapers} selectedPaperId={selectedPaperId} onSelectPaper={(id) => setSelectedPaperId(id)} onClearSelectedPaper={() => setSelectedPaperId(null)} />;
-      case Page.EVENTS: return <EventsPage setCurrentPage={setCurrentPage} />;
-      case Page.MEMBERSHIP: return <MembershipPage />;
-      case Page.CONTACT: return <Contact />;
-      case Page.PRIVACY: return <PrivacyPolicyPage />;
-      default: return <Home setCurrentPage={setCurrentPage} setSelectedPaperId={setSelectedPaperId} papers={papers} />;
-    }
-  };
+  const isAdminPage = location.pathname === '/admin';
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-900">
-      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} currentUser={currentUser} onSignOut={handleLogout} />
+      {!isAdminPage && <Navbar currentUser={currentUser} onSignOut={handleLogout} />}
       <main className="flex-grow">
         <Routes>
           <Route path="/admin" element={<DashboardPage papers={papers} setPapers={setPapers} currentUser={currentUser} setCurrentUser={setCurrentUser} onSignOut={handleLogout} />} />
-          <Route path="/*" element={renderMainContent()} />
+          <Route path="/" element={<Home setSelectedPaperId={setSelectedPaperId} papers={papers} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/research" element={<ResearchPage initialPapers={papers} selectedPaperId={selectedPaperId} onSelectPaper={(id) => setSelectedPaperId(id)} onClearSelectedPaper={() => setSelectedPaperId(null)} />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/membership" element={<MembershipPage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/faq" element={<FAQPage />} />
         </Routes>
       </main>
-      <Footer onNavigate={setCurrentPage} onShowFaqModal={() => setShowFaqModal(true)} />
-
-      {/* FAQ Modal */}
-      {showFaqModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFaqModal(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] shadow-2xl flex flex-col relative overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-             {/* Header */}
-             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
-                <h2 className="text-2xl font-serif font-bold text-slate-900">Frequently Asked Questions</h2>
-                <button onClick={() => setShowFaqModal(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                   <X className="h-5 w-5 text-slate-500" />
-                </button>
-             </div>
-             
-             {/* Content */}
-             <div className="p-6 md:p-10 overflow-y-auto">
-                <FAQPage />
-             </div>
-
-             {/* Footer */}
-             <div className="p-6 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end">
-                <button 
-                  onClick={() => setShowFaqModal(false)}
-                  className="bg-brand-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-brand-700 transition-colors"
-                >
-                  Close
-                </button>
-             </div>
-          </div>
-        </div>
-      )}
+      {!isAdminPage && <Footer />}
     </div>
   );
 };

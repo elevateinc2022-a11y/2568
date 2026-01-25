@@ -3,8 +3,10 @@ import PaperManagement from './PaperManagement';
 import EventManagement from './EventManagement';
 import ConferenceManagement from './ConferenceManagement';
 import FAQManagement from './FAQManagement';
+import SubscribersManagement from './SubscribersManagement'; // New import
 import { getEvents, getFaqs, getGlobalConferences, signIn } from '../services/supabaseService';
 import { Loader2, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ResearchPaper, Event, GlobalConference, FAQ } from '../types';
 
 const DashboardPage: React.FC<{ 
@@ -17,7 +19,7 @@ const DashboardPage: React.FC<{
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [activeManagementTab, setActiveManagementTab] = useState<'papers' | 'events' | 'conferences' | 'faqs'>('papers');
+  const [activeManagementTab, setActiveManagementTab] = useState<'papers' | 'events' | 'conferences' | 'faqs' | 'subscribers'>('papers'); // Updated type
   
   const [events, setEvents] = useState<Event[]>([]);
   const [conferences, setConferences] = useState<GlobalConference[]>([]);
@@ -128,7 +130,16 @@ const DashboardPage: React.FC<{
       <div className="min-h-screen bg-slate-50 py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-serif font-bold text-slate-900">Dashboard</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-serif font-bold text-slate-900">Dashboard</h1>
+              <Link to="/" className="text-sm text-brand-600 hover:underline">Home</Link>
+              <Link to="/about" className="text-sm text-brand-600 hover:underline">About</Link>
+              <Link to="/research" className="text-sm text-brand-600 hover:underline">Research</Link>
+              <Link to="/events" className="text-sm text-brand-600 hover:underline">Events</Link>
+              <Link to="/membership" className="text-sm text-brand-600 hover:underline">Get Involved</Link>
+              <Link to="/contact" className="text-sm text-brand-600 hover:underline">Contact</Link>
+              <Link to="/faq" className="text-sm text-brand-600 hover:underline">FAQ</Link>
+            </div>
             <div className="flex items-center gap-4">
                <span className="text-sm text-slate-500 hidden md:inline">{currentUser.email}</span>
                <button onClick={onSignOut} className="text-slate-500 hover:text-red-600">Logout</button>
@@ -161,6 +172,12 @@ const DashboardPage: React.FC<{
                >
                  FAQs
                </button>
+               <button
+                 onClick={() => setActiveManagementTab('subscribers')}
+                 className={`px-6 py-4 font-medium text-sm ${activeManagementTab === 'subscribers' ? 'bg-brand-50 text-brand-700 border-b-2 border-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
+               >
+                 Subscribers
+               </button>
             </div>
 
             <div className="p-8">
@@ -168,6 +185,7 @@ const DashboardPage: React.FC<{
               {activeManagementTab === 'events' && (loadingEvents ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <EventManagement initialEvents={events} />)}
               {activeManagementTab === 'conferences' && (loadingConferences ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <ConferenceManagement initialConferences={conferences} />)}
               {activeManagementTab === 'faqs' && (loadingFaqs ? <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-600" /> : <FAQManagement initialFaqs={faqs} />)}
+              {activeManagementTab === 'subscribers' && <SubscribersManagement />}
             </div>
           </div>
         </div>
