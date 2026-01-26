@@ -7,7 +7,7 @@ import PrivacyPolicyContent from './components/PrivacyPolicyContent';
 
 import { getPapers, signOut, getCurrentUser, getEvents, getFaqs, getGlobalConferences } from './services/supabaseService';
 import { supabase } from './supabaseClient'; // New import
-import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Play, Pause, Mail, ArrowLeft } from 'lucide-react';
+import { Search, ChevronRight, ChevronLeft, Calendar, Users, BookOpen, BarChart3, MapPin, Loader2, Check, User, X, Plus, Minus, Globe, Play, Pause, Mail, ArrowLeft, Bot } from 'lucide-react';
 import DashboardPage from './components/DashboardPage';
 import { ResearchPaper, Event, GlobalConference, FAQ } from './types';
 
@@ -192,7 +192,9 @@ const Home: React.FC<{ setSelectedPaperId: (id: string | null) => void, papers: 
                     <p className="text-slate-600">Leveraging data analytics to improve student assessment models and feedback mechanisms.</p>
                 </div>
                 <div className="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300 text-center">
-
+                    <div className="w-16 h-16 mx-auto bg-brand-100 rounded-full flex items-center justify-center mb-6 text-brand-600">
+                        <Bot className="h-8 w-8" />
+                    </div>
                     <h3 className="text-xl font-bold text-slate-900 mb-3">AI in Education</h3>
                     <p className="text-slate-600">Exploring ethical AI integration to personalize learning paths and support educator capabilities.</p>
                 </div>
