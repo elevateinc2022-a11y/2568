@@ -20,15 +20,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onSignOut }) => {
 
   const getPagePath = (page: Page): string => {
     switch (page) {
-      case Page.HOME: return '/#/';
-      case Page.ABOUT: return '/#/about';
-      case Page.RESEARCH: return '/#/research';
-      case Page.EVENTS: return '/#/events';
-      case Page.MEMBERSHIP: return '/#/membership';
-      case Page.CONTACT: return '/#/contact';
-      case Page.PRIVACY: return '/#/privacy';
-      case Page.FAQ: return '/#/faq'; // Assuming FAQ will be its own page route
-      default: return '/#/';
+      case Page.HOME: return '/';
+      case Page.ABOUT: return '/about';
+      case Page.RESEARCH: return '/research';
+      case Page.EVENTS: return '/events';
+      case Page.MEMBERSHIP: return '/membership';
+      case Page.CONTACT: return '/contact';
+      case Page.PRIVACY: return '/privacy';
+      case Page.FAQ: return '/faq'; // Assuming FAQ will be its own page route
+      default: return '/';
     }
   };
 
@@ -45,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onSignOut }) => {
   const finalNavItems: NavItem[] = [...baseNavItems];
 
   if (currentUser) {
-    finalNavItems.push({ label: 'Dashboard', value: '/#/admin', action: () => navigate('/admin') });
+    finalNavItems.push({ label: 'Dashboard', value: '/admin', action: () => navigate('/admin') });
     finalNavItems.push({ label: 'Sign Out', value: 'signOutButton', action: onSignOut });
   }
 
@@ -55,7 +55,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onSignOut }) => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
-          <div className="flex items-center cursor-pointer" onClick={() => navigate('/#/')}>
+          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
             <img src={'images/my_logo.png.png'} alt="OERC Logo" className="h-10 w-10 object-contain" />
             <div className="ml-3">
               <span className="block text-xl font-bold text-brand-900 tracking-tight leading-none">OERC</span>

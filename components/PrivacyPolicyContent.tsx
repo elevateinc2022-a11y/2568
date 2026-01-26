@@ -3,49 +3,54 @@ import React from 'react';
 const PrivacyPolicyContent: React.FC = () => {
   return (
     <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto">
-      <h2>1. Introduction</h2>
+      <h2>Privacy Policy</h2>
+
+      <h2>1. Overview</h2>
       <p>
-        Welcome to the Ontario Educational Research Consortium (OERC) Privacy Policy. We are committed to protecting your privacy and personal information. This policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
+        Ontario Educational Research Consortium (“OERC,” “we,” “our,” or “us”) is committed to protecting your privacy. This Privacy Policy explains how personal information is collected, used, and safeguarded when you visit OERC.ca.
       </p>
 
       <h2>2. Information We Collect</h2>
-      <p>We may collect personal information that you voluntarily provide to us when you register for membership, subscribe to our newsletter, attend events, or contact us. This information may include:</p>
+      <p>We collect only one type of personal information:</p>
       <ul>
-        <li>Name</li>
-        <li>Email address</li>
-        <li>Institutional affiliation</li>
-        <li>Job title/role</li>
-        <li>Payment information (processed by third-party services like Stripe)</li>
+        <li>Email address, which is voluntarily provided by users who subscribe to receive newsletters, research updates, or other communications from OERC.</li>
       </ul>
-      <p>We also automatically collect certain information when you visit our website, such as your IP address, browser type, operating system, and browsing activity, using cookies and similar tracking technologies.</p>
+      <p>We do not collect names, phone numbers, mailing addresses, payment information, or any other personal data.</p>
 
-      <h2>3. How We Use Your Information</h2>
-      <p>We use the information we collect for various purposes, including:</p>
+      <h2>3. Purpose of Collection</h2>
+      <p>Your email address is collected and used solely to:</p>
       <ul>
-        <li>To provide and manage your membership and services</li>
-        <li>To send you newsletters, updates, and promotional communications</li>
-        <li>To improve our website and services</li>
-        <li>To process transactions</li>
-        <li>To respond to your inquiries and offer support</li>
-        <li>To analyze website usage and trends</li>
+        <li>Send newsletters, research publications, and organizational updates</li>
+        <li>Communicate information you have expressly opted to receive</li>
       </ul>
+      <p>We do not use email addresses for advertising, tracking, profiling, or automated decision-making.</p>
 
-      <h2>4. Disclosure of Your Information</h2>
-      <p>We may share your information with third-party service providers who perform services on our behalf (e.g., payment processing, email delivery, website hosting). These third parties are obligated to protect your information and use it only for the purposes for which it was disclosed.</p>
-      <p>We may also disclose your information if required by law or in response to valid legal requests.</p>
+      <h2>4. Unsubscribing and Withdrawal of Consent</h2>
+      <p>You may withdraw your consent and unsubscribe at any time by:</p>
+      <ul>
+        <li>Contacting us directly at contact@oerc.ca and requesting removal from our mailing list</li>
+      </ul>
+      <p>Once you unsubscribe, your email address will no longer be used for communications from OERC.</p>
 
-      <h2>5. Data Security</h2>
-      <p>We implement reasonable technical and organizational measures designed to protect the security of your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure.</p>
+      <h2>5. Information Sharing</h2>
+      <p>OERC does not sell, rent, trade, or share your email address with third parties.</p>
+      <p>Email addresses may be processed by trusted email service providers used only for distributing OERC communications, under strict confidentiality and data-protection obligations.</p>
 
-      <h2>6. Your Privacy Rights</h2>
-      <p>Depending on your jurisdiction, you may have rights regarding your personal information, such as the right to access, correct, or delete your data. To exercise these rights, please contact us using the information below.</p>
+      <h2>6. Data Security</h2>
+      <p>We implement reasonable technical and organizational safeguards to protect email addresses from unauthorized access, disclosure, loss, or misuse. While no method of transmission or storage is completely secure, we take appropriate measures to safeguard your information.</p>
 
-      <h2>7. Changes to This Privacy Policy</h2>
-      <p>We may update this Privacy Policy from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible. We encourage you to review this Privacy Policy frequently to be informed of how we are protecting your information.</p>
+      <h2>7. Data Retention</h2>
+      <p>We retain email addresses only for as long as you remain subscribed to our communications. If you unsubscribe, your email address is removed from our active mailing list.</p>
 
-      <h2>8. Contact Us</h2>
-      <p>If you have questions or comments about this Privacy Policy, please contact us at:</p>
-      <p>Email: contact@oerc.ca</p>
+      <h2>8. Children’s Privacy</h2>
+      <p>OERC.ca is not intended for children under the age of 16. We do not knowingly collect personal information from children.</p>
+
+      <h2>9. Changes to This Privacy Policy</h2>
+      <p>This Privacy Policy may be updated from time to time. Any changes will be posted on this page with a revised “Last Updated” date.</p>
+
+      <h2>10. Contact Information</h2>
+      <p>If you have questions or concerns about this Privacy Policy or your personal information, please contact:</p>
+      <p>Ontario Educational Research Consortium (OERC)<br />Email: contact@oerc.ca</p>
     </div>
   );
 };
