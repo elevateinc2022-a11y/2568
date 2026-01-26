@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { Resend } from "npm:resend";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL");
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL"); // Re-added ADMIN_EMAIL constant
 
 // The default CORS headers are fine for this function.
 const corsHeaders = {
@@ -49,10 +49,24 @@ serve(async (req) => {
 
     // Send the welcome email to the subscriber.
     const { data: subscriberData, error: subscriberError } = await resend.emails.send({
-      from: "OERC Newsletter <onboarding@resend.dev>",
+      from: "OERC Newsletter <info@oerc.ca>", // Updated from address
       to: [userEmail],
       subject: "🎉 Welcome to the OERC Newsletter!",
-      html: `<h1>Welcome!</h1><p>Thanks for subscribing to our newsletter. We're excited to have you.</p>`,
+      html: `
+  
+  <h1>Welcome to the Ontario Educational Research Consortium (OERC) Newsletter</h1>
+  <p>Thank you for subscribing and for your interest in advancing educational research.</p>
+  <p>You will now receive updates on research initiatives, publications, events, and opportunities to engage with our work.</p>
+  <p>If you wish to unsubscribe at any time or have questions, please contact us at 
+    <a href="mailto:contact@oerc.ca">contact@oerc.ca</a>.
+  </p>
+  <p>Warm regards,<br>The OERC Team</p>
+  <!-- Logo at the end -->
+  <img src="https://drive.google.com/uc?export=view&id=10MGE-Cx0lNcBIrcizMqVYN6OEIw3kvZf" 
+       alt="OERC Logo" width="100" 
+       style="display:block; margin:20px auto 0 auto;">
+`,
+
     });
 
     if (subscriberError) {
@@ -63,7 +77,7 @@ serve(async (req) => {
     // Send admin notification email
     if (ADMIN_EMAIL) {
       const { data: adminData, error: adminError } = await resend.emails.send({
-        from: "OERC Admin Notifications <onboarding@resend.dev>",
+        from: "OERC Admin Notifications <info@oerc.ca>", // Updated from address
         to: [ADMIN_EMAIL],
         subject: `New Newsletter Subscriber: ${userEmail}`,
         html: `<p>A new user has subscribed to the OERC newsletter:</p><p><strong>Email:</strong> ${userEmail}</p>`,
