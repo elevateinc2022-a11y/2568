@@ -52,6 +52,16 @@ serve(async (req) => {
       });
     }
 
+    const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL");
+
+    if (!ADMIN_EMAIL || userAuth.user.email !== ADMIN_EMAIL) {
+      console.warn("Unauthorized attempt to send bulk email by:", userAuth.user.email);
+      return new Response("Unauthorized: Only the admin user can send bulk emails.", {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Check if the authenticated user is an admin (e.g., by checking their email or a custom claim)
     // For this example, we'll assume any authenticated user can send newsletters.
     // In a real application, you'd add more robust role-based access control.

@@ -37,6 +37,16 @@ serve(async (req) => {
       });
     }
 
+    const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL");
+
+    if (!ADMIN_EMAIL || userAuth.user.email !== ADMIN_EMAIL) {
+      console.warn("Unauthorized attempt to access subscribers by:", userAuth.user.email);
+      return new Response("Unauthorized: Only the admin user can access subscribers.", {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // You might want to add additional checks here to ensure the user is an admin
     // For now, any authenticated user can access this.
 
