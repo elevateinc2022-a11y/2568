@@ -37,10 +37,15 @@ const ResearchPage: React.FC<ResearchPageProps> = ({ initialPapers, selectedPape
       selectedTags.every(tag => p.tags?.includes(tag));
     
     const searchLower = searchTerm.toLowerCase().trim();
-    const matchesSearch = !searchLower || 
-      p.title.toLowerCase().includes(searchLower) ||
-      p.author.toLowerCase().includes(searchLower) ||
-      p.abstract.toLowerCase().includes(searchLower);
+    if (!searchLower) return matchesTags;
+
+    const searchTerms = searchLower.split(/\s+/).filter(Boolean);
+    const matchesSearch = searchTerms.every(term => 
+      p.title.toLowerCase().includes(term) ||
+      p.author.toLowerCase().includes(term) ||
+      p.abstract.toLowerCase().includes(term) ||
+      p.tags?.some(tag => tag.toLowerCase().includes(term))
+    );
 
     return matchesTags && matchesSearch;
   });
