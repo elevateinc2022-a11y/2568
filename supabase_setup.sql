@@ -42,7 +42,7 @@ create policy "Admins can update papers"
 create table global_conferences (
   id uuid default gen_random_uuid() primary key,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  name text not null,
+  title text not null,
   date date not null,
   location text not null,
   description text,
@@ -73,6 +73,33 @@ create policy "Admins can update global_conferences"
 -- Policy: Admins can delete global_conferences
 create policy "Admins can delete global_conferences"
   on global_conferences for delete
+  to authenticated
+  using (true);
+
+-- Create the newsletter_subscribers table
+create table newsletter_subscribers (
+  id uuid default gen_random_uuid() primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  email text not null unique
+);
+
+-- Enable Row Level Security (RLS) for newsletter_subscribers
+alter table newsletter_subscribers enable row level security;
+
+-- Policy: Everyone can subscribe (insert)
+create policy "Anyone can subscribe to the newsletter"
+  on newsletter_subscribers for insert
+  to public
+  with check (true);
+
+-- Policy: Only Admins can view/delete subscribers (managed via Edge Functions usually, but good for safety)
+create policy "Admins can view subscribers"
+  on newsletter_subscribers for select
+  to authenticated
+  using (true);
+
+create policy "Admins can delete subscribers"
+  on newsletter_subscribers for delete
   to authenticated
   using (true);
 
